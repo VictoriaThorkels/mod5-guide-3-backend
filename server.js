@@ -1,5 +1,7 @@
 //requiering express and initializing the app:
 const express = require('express')
+const app = express();
+const PORT = 5002; //or you can use another port for example 5001
 
 //requiering the cors middleware:
 const cors = require('cors');
@@ -9,10 +11,10 @@ const { Pool } = require('pg') //this line is only needed for the PostgreSQL ver
 const pool = new Pool() //this line is only needed for the PostgreSQL version
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = `mongodb+srv://Vefskolinn:${process.env.MONGOPASS}@cluster0.ftydf.mongodb.net/Blog?retryWrites=true&w=majority`
+const uri = `mongodb+srv://Vefskolinn:${process.env.MONGOPASS}@cluster0.4l61g.mongodb.net/?retryWrites=true&w=majority`
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-const app = express();
-const PORT = 5002; //we will use port 5001
+client.connect(async err => console.log("connected!!",err) )
+
 
 
 app.use(cors());//telling express to use the cors middleware
@@ -28,6 +30,13 @@ app.get('/p/blogs',async (req,res)=>{ //listen to a get request
   res.send(data.rows);
 })
 
+app.get('/m/blogs',async (req,res)=>{ //listen to a get request
+  const collection = client.db("Blog").collection("blogs");
+  const data = await collection.find().toArray();
+  console.log("this is the data:", data);
+  res.send(data);
+})
+
 app.post('/p/blog',async (req,res)=>{ //listen to a post request  
   console.log(req.body);
   const data = await pool.query(
@@ -39,19 +48,23 @@ app.post('/p/blog',async (req,res)=>{ //listen to a post request
 
 app.post('/m/blog',async (req,res)=>{ //listen to a post request  
   console.log(req.body);
-  client.connect(async err => {
 
-    const collection = client.db("Blog").collection("blogs");
-    console.log("connected!!",err);
-    //perform actions on the collection object
-    //find everything in the collection and turn it into an array:
-    collection.insertOne(req.body).then(()=>{
-      res.send({message:"success"})
-    }).catch((e)=>{
-      res.send(e);
-    })
-    
-  });
+  const collection = client.db("Blog").collection("blogs");
+  
+  //perform actions on the collection object
+  //find everything in the collection and turn it into an array:
+  collection.insertOne(req.body).then(()=>{
+    res.send({message:"success"})
+  }).catch((e)=>{
+    res.send(e);
+  })
+   
+})
+
+app.put('/m/blog/:blog', async function (req, res) {
+  const collection = client.db("Blog").collection("blogs");
+  const response = await collection.updateOne({_id: req.params.id}, req.body);
+  res.send(response);
 })
 
 
