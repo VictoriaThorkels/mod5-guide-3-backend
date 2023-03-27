@@ -11,7 +11,7 @@ const { Pool } = require('pg') //this line is only needed for the PostgreSQL ver
 const pool = new Pool() //this line is only needed for the PostgreSQL version
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = `mongodb+srv://Vefskolinn:${process.env.MONGOPASS}@cluster0.4l61g.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://victoriathorkels:${process.env.MONGOPASS}@cluster0.7l4berf.mongodb.net/?retryWrites=true&w=majority`
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(async err => console.log("connected!!",err) )
 
