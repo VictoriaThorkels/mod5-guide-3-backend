@@ -72,3 +72,5 @@ app.listen(PORT, ()=>{ //listen to the port we chose above
     //print to the console that the server is listening
     console.log("listening to port: " + PORT);
 })
+
+module.exports = app;
